@@ -70,7 +70,7 @@ def link_url(value):
 def render(items, now, days):
     lines = [
         "---",
-        f'title: "Weekly links for WK{now:%V} ({now:%Y/%m/%d})"',
+        f'title: "Weekly links for WK{now:%V}"',
         f"date: {now.strftime('%Y-%m-%d %H:%M:%S %z')}",
         "categories: [links]",
         "tags: [bookmarks]",
@@ -83,13 +83,9 @@ def render(items, now, days):
         title = md_text(item.get("title") or item.get("link") or "Untitled bookmark")
         url = link_url(item.get("link"))
         lines.append(f"- [{title}]({url})" if url else f"- {title}")
-        lines.append(f"  - Saved: {date(item['created']):%Y-%m-%d %H:%M UTC}")
         excerpt = md_text(item.get("excerpt"))
         if excerpt:
             lines.append(f"  - {excerpt}")
-        tags = [md_text(t) for t in (item.get("tags") or []) if str(t).strip()]
-        if tags:
-            lines.append("  - Tags: " + ", ".join(tags))
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
