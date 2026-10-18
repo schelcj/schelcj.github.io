@@ -1,0 +1,40 @@
+name: Publish Raindrop links post
+
+on:
+  schedule:
+    - cron: "15 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: raindrop-post
+  cancel-in-progress: false
+
+jobs:
+  create-post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Generate one Jekyll post with recent links
+        env:
+          RAINDROP_TOKEN: ${{ secrets.RAINDROP_TOKEN }}
+          DAYS: "7"
+        run: python scripts/raindrop_to_post.py
+      - name: Commit and push generated post
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _posts/
+          if git diff --cached --quiet; then
+            echo "No post changes to commit."
+            exit 0
+          fi
+          git commit -m "Publish links post"
+          git push
