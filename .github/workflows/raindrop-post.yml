@@ -2,7 +2,7 @@ name: Publish Raindrop links post
 
 on:
   schedule:
-    - cron: "15 12 * * *"
+    - cron: "0 8 * * 6"
   workflow_dispatch:
 
 permissions:
